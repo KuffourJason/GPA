@@ -22,6 +22,8 @@
 #include <bb/cascades/Container>
 #include <bb/cascades/Label>
 #include <bb/cascades/TouchEvent>
+
+
 #include <bb/cascades/SceneCover>
 
 using namespace bb::cascades;
