@@ -19,6 +19,7 @@ import bb.system 1.0
 
 Page {
     id: topLevel
+    property int count
 
     Menu.definition: MenuDefinition {
         id: swipeDown
@@ -43,6 +44,9 @@ Page {
         ]
     }
 
+    onCreationCompleted: {
+        count = 0
+    }
 
     Container {
         id: top
@@ -149,6 +153,8 @@ Page {
                     property string removeCredit
                     property string cREDIT
                     property string gRADE
+                    property string cour_name
+                    property string kEY
 
                     signal courRemoved()
                     signal cREDChange()
@@ -179,10 +185,14 @@ Page {
                             TouchablePane {
                                 id: current
                                 objectName: "current"
+                                key: count++
 
+                        
                                 onGradesChanged: {
                                     add.gRADE = grades
                                     add.cREDIT = credits
+                                    add.kEY = key
+                                    add.cour_name = courseNames
                                     add.gRADChange()
                                 }
 
@@ -195,6 +205,7 @@ Page {
                                 onCourseRemoved: {
                                     add.removeCredit = visCredits;
                                     add.removeGrade = visGrade;
+                                    add.kEY = key
                                     add.courRemoved()
                                 }
                             }

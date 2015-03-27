@@ -100,28 +100,32 @@ ApplicationUI::ApplicationUI(QObject *parent) :
 
 void ApplicationUI::saveValues()
 {
-    QFile file("data/Stats.txt");
-    file.open( QIODevice::WriteOnly | QIODevice::Text );
-    QTextStream out(&file);
-    out << numCredits << endl;
-    out << finalGPA << endl;
-    file.close();
+    QFile file("data/bin.txt");
+    file.open( QIODevice::WriteOnly);
+    QDataStream stream( &file);
+
+    QList<int> count = map.keys();
+    pane test;
+    QMap<int,pane>::iterator it = map.begin();
+
+    while( it != map.end() ){
+        stream << it.value();
+        ++it;
+    }
 }
 
 void ApplicationUI::loadValues(){
 
-    QFile file("data/Stats.txt");
-    file.open( QIODevice::ReadOnly | QIODevice::Text );
+    //QFile file("data/Stats.txt");
+    //file.open( QIODevice::ReadOnly | QIODevice::Text );
+    QFile file("data/bin.txt");
+    file.open( QIODevice::ReadOnly);
+    QDataStream stream( &file);
 
-    QTextStream in(&file);
-    QString nCr = in.readLine();
-    QString gPP = in.readLine();
-
-    if( nCr.isEmpty() ){ numCredits = 0; }
-    else { numCredits = nCr.toInt(); updateCredits(false, 0); holder->removeAll(); }
-
-    if(gPP.isEmpty()) { }
-    else { finalGPA = gPP.toInt(); updateGPA( false, 0); }
+    pane test;
+    while ( !stream.atEnd() ){
+        stream >> test;
+    }
 }
 
 //Obtains the recently added course's credits and updates the displayed field
@@ -159,6 +163,12 @@ void ApplicationUI::updateGP()
     ApplicationUI::setcurrCred(sp);
     updateCredits( false, sp );
     updateGPA( false, gpa*currCred);
+
+    pane element;
+    element.credit_value = sp;
+    element.letter_grade = text;
+    element.course_name = add.data()->property("cour_name").toString();
+    map.insert( add.data()->property("kEY").toInt(ok), element);
 }
 
 //Used by the course removed function
@@ -205,7 +215,6 @@ void ApplicationUI::updateGPA( bool clear, int update)
         double value = ( ApplicationUI::getfinalGPA() / ApplicationUI::getnumCred() );
 
         if( isnan( value ) == 1 ){ value = 0; }
-
         QString upp = QString::number(value, 'g',3);
         gPa.data()->setText(upp);
     }
@@ -217,6 +226,8 @@ void ApplicationUI::clearAll( bb::cascades::TouchEvent *event)
     holder->removeAll();
     updateCredits(true, -10);
     updateGPA(true, -10);
+
+    map.empty();
 }
 
 int ApplicationUI::numCredits = 0;
@@ -231,6 +242,8 @@ void ApplicationUI::courseRemoved(){
     int sup = add.data()->property("removeCredit").toInt( ok);
     ApplicationUI::setcurrCred( -sup);
     updateGP( add.data()->property("removeGrade").toString() );
+
+    map.remove( add.data()->property("kEY").toInt());
 
     updateCredits( false, -sup );
     updateGPA( false, gpa*currCred);
@@ -269,6 +282,7 @@ int ApplicationUI::getcurrCred(){
 double ApplicationUI::getfinalGPA(){
     return finalGPA;
 }
+
 
 void ApplicationUI::onSystemLanguageChanged()
 {

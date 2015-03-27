@@ -22,6 +22,7 @@
 #include <bb/cascades/Button>
 #include <bb/cascades/AbstractPane>
 #include <bb/cascades/ActionItem>
+#include <QMap>
 
 namespace bb
 {
@@ -48,6 +49,36 @@ public:
     static int currCred;
     static int gpa;
     static double finalGPA;
+
+    struct pane{
+        QString course_name;
+        QString letter_grade;
+        int credit_value;
+    };
+
+    QMap<int, pane> map;
+    static QByteArray store;
+
+    friend QDataStream & operator << (QDataStream & out, const pane &element ){
+        out << element.course_name;
+        out << element.credit_value;
+        out << element.letter_grade;
+        return out;
+    }
+
+    friend QDataStream & operator >> (QDataStream & in,  pane &element ){
+        QString name;
+        QString letter;
+        qint32 credit;
+
+        in >> name;
+        in >> credit;
+        in >> letter;
+        element.course_name = name;
+        element.credit_value = (int)credit;
+        element.letter_grade = letter;
+        return in;
+    }
 
 private slots:
     void onSystemLanguageChanged();

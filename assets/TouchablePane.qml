@@ -10,6 +10,7 @@ ScrollView {
     property string visGrade: grades
     property string visCredits: credits
     property int hold: 0
+    property int key: 0
     
     scrollViewProperties.scrollMode: ScrollMode.Horizontal
     scrollViewProperties.maxContentScale: 1.0
