@@ -65,9 +65,7 @@ Page {
             old_stuff.me = nAME
             old_stuff.ter = lETTER
             var oldcr = old_stuff.createObject()
-            main.add(oldcr)
-            console.log( old_cour + " thisis the oahfeoa")
-            
+            main.add(oldcr)           
         }
         
          signal start()
@@ -225,7 +223,7 @@ Page {
                                 onCourseRemoved: {
                                     add.removeCredit = visCredits;
                                     add.removeGrade = visGrade;
-                                    //add.kEY = key
+                                    add.kEY = key
                                     add.courRemoved()
                                 }
                             }
@@ -426,15 +424,23 @@ Page {
                 
                 Load {
                     id: old
-                    credits : old_stuff.dits.toFixed(1)
+                    credits : old_stuff.dits.toFixed(0)
                     courseNames : old_stuff.me.toString()
                     grades : old_stuff.ter.toString()
                     
                     onCreationCompleted: {
-                        credits = old_stuff.dits.toFixed(1)
+                        credits = old_stuff.dits.toFixed(0)
                         courseNames = old_stuff.me.toString()
                         grades = old_stuff.ter.toString()
                     }
+                    
+                    onCourseRemoved: {
+                        add.removeCredit = visCredits;
+                        add.removeGrade = visGrade;
+                        add.kEY = key
+                        add.courRemoved()
+                    }
+
                 }
             }
         ]

@@ -108,26 +108,45 @@ ApplicationUI::ApplicationUI(QObject *parent) :
 
 void ApplicationUI::saveValues()
 {
-    QFile file("data/snippets.txt");
+    QFile file("data/stat.txt");
     file.open( QIODevice::WriteOnly );
-    QDataStream stream( &file);
-    stream << map;
+    QFile file1("data/old.bin");
+    file1.open( QIODevice::WriteOnly );
+    QDataStream stream1( &file1);
+    QDataStream stream( &file );
+    stream1 << map;
+
+    stream << this->finalGPA << this->numCredits;
+
+    qDebug() << this->finalGPA << this->numCredits << "going into";
+
 }
 
 void ApplicationUI::loadValues(){
 
-    //QFile file("data/Stats.txt");
-    //file.open( QIODevice::ReadOnly | QIODevice::Text );
-    QFile file("data/snippets.txt");
+    QFile file1("data/stat.txt");
+    file1.open( QIODevice::ReadOnly | QIODevice::Text );
+    QFile file("data/old.bin");
     file.open( QIODevice::ReadOnly | QIODevice::Text );
     QDataStream stream( &file);
+    QDataStream stream1( &file1);
 
     stream >> map;
+
+    stream1 >> this->finalGPA >> this->numCredits;
+
+    double value = ( this->finalGPA / this->numCredits );
+
+    if( isnan( value ) == 1 ){ value = 0; }
+    QString upp = QString::number(value, 'g',3);
+    gPa.data()->setText(upp);
+
+    QString up = QString::number( this->numCredits, 10);
+    cRedits.data()->setText( up );
 
     QMap<int,pane>::iterator it = map.begin();
 
     while ( it != map.end() ){
-        qDebug() << it.value().course_name << "property setting";
 
         propertyMap->setProperty("cou", it.value().course_name);
         propertyMap->setProperty("cre", it.value().credit_value);
@@ -135,6 +154,7 @@ void ApplicationUI::loadValues(){
         emit mySignal();
         it++;
     }
+
 
 }
 
@@ -237,7 +257,7 @@ void ApplicationUI::clearAll( bb::cascades::TouchEvent *event)
     updateCredits(true, -10);
     updateGPA(true, -10);
 
-    map.empty();
+    map.clear();
 }
 
 int ApplicationUI::numCredits = 0;

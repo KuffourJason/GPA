@@ -62,7 +62,7 @@ public:
 
     friend QDataStream & operator << (QDataStream & out, const pane &element ){
         out << element.course_name << (quint32)element.credit_value << element.letter_grade;
-        qDebug() << element.course_name << "out operation";
+
         return out;
     }
 
@@ -70,9 +70,7 @@ public:
         QString name;
         QString letter;
         qint32 credit;
-
         in >> name >> credit >> letter;
-        qDebug() << name << "in operation";
 
         element.course_name = name;
         element.credit_value = (int)credit;
