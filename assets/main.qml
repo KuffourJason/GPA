@@ -19,7 +19,9 @@ import bb.system 1.0
 
 Page {
     id: topLevel
-    property int count
+    objectName: "topLevel"
+
+
 
     Menu.definition: MenuDefinition {
         id: swipeDown
@@ -44,14 +46,30 @@ Page {
         ]
     }
 
-    onCreationCompleted: {
-        count = 0
-    }
-
     Container {
         id: top
         objectName: "top"
+        property int count
+        property string old_cour: propertyMap.cou 
+        property string old_let: propertyMap.gra
+        property int old_cre: propertyMap.cre
      
+          
+       onOld_letChanged: {
+            oldStuff.mySignal.connect( top.oldState(top.old_cre, top.old_let, top.old_cour) )
+        }
+        
+                    
+        function oldState(cREDITS, lETTER, nAME){
+            old_stuff.dits =  cREDITS
+            old_stuff.me = nAME
+            old_stuff.ter = lETTER
+            var oldcr = old_stuff.createObject()
+            main.add(oldcr)
+            console.log( old_cour + " thisis the oahfeoa")
+            
+        }
+        
          signal start()
          signal leave()
          
@@ -82,6 +100,8 @@ Page {
                     preferredHeight: 230
                     translationX: 0.0
                     opacity: 0.8
+
+
 
                     onTouch: {
                         if (event.isDown()) {
@@ -154,7 +174,7 @@ Page {
                     property string cREDIT
                     property string gRADE
                     property string cour_name
-                    property string kEY
+                    property int kEY
 
                     signal courRemoved()
                     signal cREDChange()
@@ -175,6 +195,7 @@ Page {
                             setOpacity(0.8)
                             var newTab = courseTab.createObject()
                             main.add(newTab)
+                            top.count = top.count + 1
                         }
                     }
                     attachedObjects: [
@@ -185,9 +206,8 @@ Page {
                             TouchablePane {
                                 id: current
                                 objectName: "current"
-                                key: count++
+                                key: top.count
 
-                        
                                 onGradesChanged: {
                                     add.gRADE = grades
                                     add.cREDIT = credits
@@ -205,7 +225,7 @@ Page {
                                 onCourseRemoved: {
                                     add.removeCredit = visCredits;
                                     add.removeGrade = visGrade;
-                                    add.kEY = key
+                                    //add.kEY = key
                                     add.courRemoved()
                                 }
                             }
@@ -396,6 +416,28 @@ Page {
                 }
             }
         }
+
+        attachedObjects: [
+            ComponentDefinition {
+                id: old_stuff
+                property int dits
+                property string me
+                property string ter
+                
+                Load {
+                    id: old
+                    credits : old_stuff.dits.toFixed(1)
+                    courseNames : old_stuff.me.toString()
+                    grades : old_stuff.ter.toString()
+                    
+                    onCreationCompleted: {
+                        credits = old_stuff.dits.toFixed(1)
+                        courseNames = old_stuff.me.toString()
+                        grades = old_stuff.ter.toString()
+                    }
+                }
+            }
+        ]
 
     }
 }

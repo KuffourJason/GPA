@@ -1,10 +1,11 @@
 1
-8
+9
 AddDialogView.qml
 EditDialogView.qml
 images/exit.jpg
 images/load.png
 images/logo.jpg
 images/save.png
+Load.qml
 main.qml
 TouchablePane.qml

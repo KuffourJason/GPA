@@ -22,7 +22,9 @@
 #include <bb/cascades/Button>
 #include <bb/cascades/AbstractPane>
 #include <bb/cascades/ActionItem>
+#include <bb/cascades/Page>
 #include <QMap>
+#include <QDataStream>
 
 namespace bb
 {
@@ -57,12 +59,10 @@ public:
     };
 
     QMap<int, pane> map;
-    static QByteArray store;
 
     friend QDataStream & operator << (QDataStream & out, const pane &element ){
-        out << element.course_name;
-        out << element.credit_value;
-        out << element.letter_grade;
+        out << element.course_name << (quint32)element.credit_value << element.letter_grade;
+        qDebug() << element.course_name << "out operation";
         return out;
     }
 
@@ -71,9 +71,9 @@ public:
         QString letter;
         qint32 credit;
 
-        in >> name;
-        in >> credit;
-        in >> letter;
+        in >> name >> credit >> letter;
+        qDebug() << name << "in operation";
+
         element.course_name = name;
         element.credit_value = (int)credit;
         element.letter_grade = letter;
@@ -93,6 +93,7 @@ private:
     QPointer <bb::cascades::ActionItem> save;
     QPointer <bb::cascades::ActionItem> load;
     bb::cascades::Container* holder;
+    QPointer <bb::cascades::Container> top;
 
     void updateCredits(bool clear, int update);
     void updateGPA(bool clear, int update);
@@ -102,6 +103,10 @@ private:
     int getcurrCred();
     void setfinalGPA( double gpa );
     double getfinalGPA();
+
+    signals:
+        void mySignal();
+
 
 public slots:
     void clearAll(bb::cascades::TouchEvent *event);

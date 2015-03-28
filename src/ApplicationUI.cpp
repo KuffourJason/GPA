@@ -21,10 +21,13 @@
 #include <bb/cascades/LocaleHandler>
 #include <bb/cascades/Container>
 #include <bb/cascades/Label>
+#include <bb/cascades/Page>
 #include <bb/cascades/TouchEvent>
-
-
+#include <QVariant>
+#include <QMap>
 #include <bb/cascades/SceneCover>
+#include <QDataStream>
+#include <QByteArray>
 
 using namespace bb::cascades;
 
@@ -36,6 +39,8 @@ using namespace bb::cascades;
 //loaded and saved by sending a signal to QML
 //
 
+AbstractPane *root;
+QDeclarativePropertyMap *propertyMap;
 
 ApplicationUI::ApplicationUI(QObject *parent) :
         QObject(parent)
@@ -57,12 +62,17 @@ ApplicationUI::ApplicationUI(QObject *parent) :
     // to ensure the document gets destroyed properly at shut down.
     QmlDocument *qml = QmlDocument::create("asset:///main.qml").parent(this);
 
+    qml->setContextProperty("oldStuff", this);
+    propertyMap = new QDeclarativePropertyMap;
+    qml->setContextProperty("propertyMap", propertyMap);
+
     // Create root object for the UI
-    AbstractPane *root = qml->createRootObject<AbstractPane>();
+    root = qml->createRootObject<AbstractPane>();
 
     // Set created root object as the application scene
     Application::instance()->setScene(root);
 
+    top = root->findChild<Container*>("top");
     cRedits = root->findChild<Label*>("cRedits");
     gPa = root->findChild<Label*>("gPa");
     clear_Button = root->findChild<Label*>("clear_Button");
@@ -70,8 +80,6 @@ ApplicationUI::ApplicationUI(QObject *parent) :
     holder = root->findChild<Container*>("mai");
     save = root->findChild<ActionItem*>("save");
     load = root->findChild<ActionItem*>("load");
-
-    QFile file("data/Stats.txt");
 
     bool clearSig = connect( clear_Button, SIGNAL( touch(bb::cascades::TouchEvent *) ), this, SLOT( clearAll(bb::cascades::TouchEvent *) ) );
     Q_ASSERT( clearSig );
@@ -100,32 +108,34 @@ ApplicationUI::ApplicationUI(QObject *parent) :
 
 void ApplicationUI::saveValues()
 {
-    QFile file("data/bin.txt");
-    file.open( QIODevice::WriteOnly);
+    QFile file("data/snippets.txt");
+    file.open( QIODevice::WriteOnly );
     QDataStream stream( &file);
-
-    QList<int> count = map.keys();
-    pane test;
-    QMap<int,pane>::iterator it = map.begin();
-
-    while( it != map.end() ){
-        stream << it.value();
-        ++it;
-    }
+    stream << map;
 }
 
 void ApplicationUI::loadValues(){
 
     //QFile file("data/Stats.txt");
     //file.open( QIODevice::ReadOnly | QIODevice::Text );
-    QFile file("data/bin.txt");
-    file.open( QIODevice::ReadOnly);
+    QFile file("data/snippets.txt");
+    file.open( QIODevice::ReadOnly | QIODevice::Text );
     QDataStream stream( &file);
 
-    pane test;
-    while ( !stream.atEnd() ){
-        stream >> test;
+    stream >> map;
+
+    QMap<int,pane>::iterator it = map.begin();
+
+    while ( it != map.end() ){
+        qDebug() << it.value().course_name << "property setting";
+
+        propertyMap->setProperty("cou", it.value().course_name);
+        propertyMap->setProperty("cre", it.value().credit_value);
+        propertyMap->setProperty("gra", it.value().letter_grade);
+        emit mySignal();
+        it++;
     }
+
 }
 
 //Obtains the recently added course's credits and updates the displayed field
@@ -137,6 +147,12 @@ void ApplicationUI::updateCred()
     updateGP( add.data()->property("gRADE").toString() ); // Added this line
     updateCredits( false, sp );
     updateGPA( false, gpa*currCred);
+
+    pane element;
+    element.credit_value = sp;
+    element.letter_grade = add.data()->property("gRADE").toString();
+    element.course_name = add.data()->property("cour_name").toString();
+    map.insert( add.data()->property("kEY").toInt(ok), element);
 }
 
 //Converts the grade letter to its grade point value
@@ -163,12 +179,6 @@ void ApplicationUI::updateGP()
     ApplicationUI::setcurrCred(sp);
     updateCredits( false, sp );
     updateGPA( false, gpa*currCred);
-
-    pane element;
-    element.credit_value = sp;
-    element.letter_grade = text;
-    element.course_name = add.data()->property("cour_name").toString();
-    map.insert( add.data()->property("kEY").toInt(ok), element);
 }
 
 //Used by the course removed function

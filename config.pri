@@ -38,6 +38,7 @@ config_pri_assets {
     OTHER_FILES += \
         $$quote($$BASEDIR/assets/AddDialogView.qml) \
         $$quote($$BASEDIR/assets/EditDialogView.qml) \
+        $$quote($$BASEDIR/assets/Load.qml) \
         $$quote($$BASEDIR/assets/TouchablePane.qml) \
         $$quote($$BASEDIR/assets/images/exit.jpg) \
         $$quote($$BASEDIR/assets/images/load.png) \
