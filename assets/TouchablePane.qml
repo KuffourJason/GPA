@@ -47,6 +47,7 @@ ScrollView {
     
     onVisibleChanged: { 
         courseRemoved()
+        destroy()
     }
     
     onCreationCompleted: {

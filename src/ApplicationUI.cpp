@@ -97,13 +97,10 @@ ApplicationUI::ApplicationUI(QObject *parent) :
     Q_ASSERT( removedSig );
     Q_UNUSED( removedSig);
 
-    bool saveSig = connect( save, SIGNAL( triggered() ), this, SLOT(saveValues() ) );
+    bool saveSig = connect( top, SIGNAL( done() ), this, SLOT(saveValues() ) );
     Q_ASSERT( saveSig );
     Q_UNUSED( saveSig);
 
-    bool loadSig = connect( load, SIGNAL( triggered() ), this, SLOT(loadValues() ) );
-    Q_ASSERT( loadSig );
-    Q_UNUSED( loadSig);
 }
 
 void ApplicationUI::saveValues()
@@ -117,45 +114,46 @@ void ApplicationUI::saveValues()
     stream1 << map;
 
     stream << this->finalGPA << this->numCredits;
-
-    qDebug() << this->finalGPA << this->numCredits << "going into";
-
 }
 
 void ApplicationUI::loadValues(){
 
-    QFile file1("data/stat.txt");
-    file1.open( QIODevice::ReadOnly | QIODevice::Text );
-    QFile file("data/old.bin");
-    file.open( QIODevice::ReadOnly | QIODevice::Text );
-    QDataStream stream( &file);
-    QDataStream stream1( &file1);
+    if( this->opened == false){
 
-    stream >> map;
+        QFile file1("data/stat.txt");
+        file1.open( QIODevice::ReadOnly | QIODevice::Text );
+        QFile file("data/old.bin");
+        file.open( QIODevice::ReadOnly | QIODevice::Text );
+        QDataStream stream( &file);
+        QDataStream stream1( &file1);
 
-    stream1 >> this->finalGPA >> this->numCredits;
+        stream >> map;
 
-    double value = ( this->finalGPA / this->numCredits );
+        stream1 >> this->finalGPA >> this->numCredits;
 
-    if( isnan( value ) == 1 ){ value = 0; }
-    QString upp = QString::number(value, 'g',3);
-    gPa.data()->setText(upp);
+        double value = ( this->finalGPA / this->numCredits );
 
-    QString up = QString::number( this->numCredits, 10);
-    cRedits.data()->setText( up );
+        if( isnan( value ) == 1 ){ value = 0; }
+        QString upp = QString::number(value, 'g',3);
+        gPa.data()->setText(upp);
 
-    QMap<int,pane>::iterator it = map.begin();
+        QString up = QString::number( this->numCredits, 10);
+        cRedits.data()->setText( up );
 
-    while ( it != map.end() ){
+        QMap<int,pane>::iterator it = map.begin();
 
-        propertyMap->setProperty("cou", it.value().course_name);
-        propertyMap->setProperty("cre", it.value().credit_value);
-        propertyMap->setProperty("gra", it.value().letter_grade);
-        emit mySignal();
-        it++;
+        while ( it != map.end() ){
+
+            propertyMap->setProperty("cou", it.value().course_name);
+            propertyMap->setProperty("cre", it.value().credit_value);
+            propertyMap->setProperty("gra", it.value().letter_grade);
+            propertyMap->setProperty("key", it.key() );
+            emit mySignal();
+            it++;
+        }
+
+        this->opened = true;
     }
-
-
 }
 
 //Obtains the recently added course's credits and updates the displayed field
@@ -264,6 +262,7 @@ int ApplicationUI::numCredits = 0;
 double ApplicationUI::finalGPA = 0;
 int ApplicationUI::currCred = 0;
 int ApplicationUI::gpa = 0;
+bool ApplicationUI::opened = false;
 
 //Updates the finalGPA and numOfCreds so that it reflects the deleted values
 void ApplicationUI::courseRemoved(){

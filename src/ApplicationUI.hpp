@@ -51,6 +51,7 @@ public:
     static int currCred;
     static int gpa;
     static double finalGPA;
+    static bool opened;
 
     struct pane{
         QString course_name;
@@ -101,6 +102,7 @@ private:
     int getcurrCred();
     void setfinalGPA( double gpa );
     double getfinalGPA();
+
 
     signals:
         void mySignal();

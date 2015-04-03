@@ -33,6 +33,7 @@ Q_DECL_EXPORT int main(int argc, char **argv)
     // is loaded and the application scene is set.
     ApplicationUI appui;
 
+    QObject::connect(&app, SIGNAL( awake() ), &appui, SLOT( loadValues() ));
     // Enter the application main event loop.
     return Application::exec();
 }

@@ -20,8 +20,19 @@ import bb.system 1.0
 Page {
     id: topLevel
     objectName: "topLevel"
-
-
+    
+    
+    onCreationCompleted: {
+        Application.autoExit = false;
+        Application.manualExit.connect(onManualExit);
+    }
+    
+    function onManualExit() {
+        // This must exit the application.
+        top.done()
+        Application.quit()
+    }
+    
 
     Menu.definition: MenuDefinition {
         id: swipeDown
@@ -53,17 +64,21 @@ Page {
         property string old_cour: propertyMap.cou 
         property string old_let: propertyMap.gra
         property int old_cre: propertyMap.cre
+        property int old_key: propertyMap.key
      
+        signal done()
+        
           
        onOld_letChanged: {
-            oldStuff.mySignal.connect( top.oldState(top.old_cre, top.old_let, top.old_cour) )
+            oldStuff.mySignal.connect( top.oldState(top.old_cre, top.old_let, top.old_cour, top.old_key) )
         }
         
                     
-        function oldState(cREDITS, lETTER, nAME){
+        function oldState(cREDITS, lETTER, nAME, kEY){
             old_stuff.dits =  cREDITS
             old_stuff.me = nAME
             old_stuff.ter = lETTER
+            old_stuff.k = kEY
             var oldcr = old_stuff.createObject()
             main.add(oldcr)           
         }
@@ -421,6 +436,7 @@ Page {
                 property int dits
                 property string me
                 property string ter
+                property int k
                 
                 Load {
                     id: old
@@ -432,6 +448,27 @@ Page {
                         credits = old_stuff.dits.toFixed(0)
                         courseNames = old_stuff.me.toString()
                         grades = old_stuff.ter.toString()
+                        key = old_stuff.k
+                        done: 1
+
+                    }
+                    
+                    onGradesChanged: {
+                        if( done == 1){
+                            add.gRADE = grades
+                            add.cREDIT = credits
+                            add.kEY = key
+                            add.cour_name = courseNames
+                            add.gRADChange()
+                        }
+                    }
+                    
+                    onCreditsChanged: {
+                        if( done == 1 ){
+                            add.cREDIT = credits
+                            add.gRADE = grades
+                            add.cREDChange()
+                        }
                     }
                     
                     onCourseRemoved: {
