@@ -68,18 +68,20 @@ Page {
      
         signal done()
         
-          
-       onOld_letChanged: {
+        onOld_keyChanged: {
             oldStuff.mySignal.connect( top.oldState(top.old_cre, top.old_let, top.old_cour, top.old_key) )
         }
         
-                    
+                     
         function oldState(cREDITS, lETTER, nAME, kEY){
+            top.count = top.count + 1
             old_stuff.dits =  cREDITS
             old_stuff.me = nAME
             old_stuff.ter = lETTER
-            old_stuff.k = kEY
+            old_stuff.k = top.count
+            console.log("The value of key is " + old_stuff.k + " from qml code")
             var oldcr = old_stuff.createObject()
+            
             main.add(oldcr)           
         }
         
@@ -206,9 +208,10 @@ Page {
 
                         if (event.isUp()) {
                             setOpacity(0.8)
-                            var newTab = courseTab.createObject()
-                            main.add(newTab)
                             top.count = top.count + 1
+                            var newTab = courseTab.createObject()
+                            console.log("The newly added pane has a value of " + top.count)
+                            main.add(newTab)
                         }
                     }
                     attachedObjects: [
@@ -449,8 +452,9 @@ Page {
                         courseNames = old_stuff.me.toString()
                         grades = old_stuff.ter.toString()
                         key = old_stuff.k
+                        //top.count = old_stuff.k + 1
+                        console.log("The current value that the pane has is " + old_stuff.k )
                         done: 1
-
                     }
                     
                     onGradesChanged: {
@@ -475,6 +479,7 @@ Page {
                         add.removeCredit = visCredits;
                         add.removeGrade = visGrade;
                         add.kEY = key
+                        console.log("The following is being removed " + key + " and has this info " + visCredits)
                         add.courRemoved()
                     }
 

@@ -120,6 +120,8 @@ void ApplicationUI::loadValues(){
 
     if( this->opened == false){
 
+        QMap<int, pane> temp;
+
         QFile file1("data/stat.txt");
         file1.open( QIODevice::ReadOnly | QIODevice::Text );
         QFile file("data/old.bin");
@@ -127,8 +129,7 @@ void ApplicationUI::loadValues(){
         QDataStream stream( &file);
         QDataStream stream1( &file1);
 
-        stream >> map;
-
+        stream >> temp;
         stream1 >> this->finalGPA >> this->numCredits;
 
         double value = ( this->finalGPA / this->numCredits );
@@ -140,15 +141,22 @@ void ApplicationUI::loadValues(){
         QString up = QString::number( this->numCredits, 10);
         cRedits.data()->setText( up );
 
-        QMap<int,pane>::iterator it = map.begin();
+        QMap<int,pane>::iterator it = temp.begin();
 
-        while ( it != map.end() ){
+        int num = 1;
+
+        while ( it != temp.end() ){
+
+            map[num] = it.value();
+
+            qDebug() << endl << "The value of key " << num << " is " + it.value().course_name << endl << endl;
 
             propertyMap->setProperty("cou", it.value().course_name);
             propertyMap->setProperty("cre", it.value().credit_value);
             propertyMap->setProperty("gra", it.value().letter_grade);
-            propertyMap->setProperty("key", it.key() );
+            propertyMap->setProperty("key", num );
             emit mySignal();
+            num++;
             it++;
         }
 
