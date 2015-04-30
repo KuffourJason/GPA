@@ -452,8 +452,6 @@ Page {
                         courseNames = old_stuff.me.toString()
                         grades = old_stuff.ter.toString()
                         key = old_stuff.k
-                        //top.count = old_stuff.k + 1
-                        console.log("The current value that the pane has is " + old_stuff.k )
                         done: 1
                     }
                     
@@ -471,6 +469,8 @@ Page {
                         if( done == 1 ){
                             add.cREDIT = credits
                             add.gRADE = grades
+                            add.cour_name = courseNames
+                            console.log(courseNames + " is blah")
                             add.cREDChange()
                         }
                     }
@@ -479,7 +479,6 @@ Page {
                         add.removeCredit = visCredits;
                         add.removeGrade = visGrade;
                         add.kEY = key
-                        console.log("The following is being removed " + key + " and has this info " + visCredits)
                         add.courRemoved()
                     }
 

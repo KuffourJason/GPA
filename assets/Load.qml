@@ -82,6 +82,11 @@ ScrollView {
                 textStyle.color: Color.Black
                 translationY: 0.0
             
+                onTextChanged: {
+                    if( courseName.text != ""){
+                        scroll.courseNames =  courseName.text
+                    }
+                }
             }
             
             Label {

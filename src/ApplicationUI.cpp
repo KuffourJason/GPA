@@ -148,9 +148,6 @@ void ApplicationUI::loadValues(){
         while ( it != temp.end() ){
 
             map[num] = it.value();
-
-            qDebug() << endl << "The value of key " << num << " is " + it.value().course_name << endl << endl;
-
             propertyMap->setProperty("cou", it.value().course_name);
             propertyMap->setProperty("cre", it.value().credit_value);
             propertyMap->setProperty("gra", it.value().letter_grade);
@@ -178,6 +175,9 @@ void ApplicationUI::updateCred()
     element.credit_value = sp;
     element.letter_grade = add.data()->property("gRADE").toString();
     element.course_name = add.data()->property("cour_name").toString();
+
+    qDebug() << "The course name is " << element.course_name;
+
     map.insert( add.data()->property("kEY").toInt(ok), element);
 }
 
