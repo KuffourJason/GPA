@@ -107,27 +107,38 @@ void ApplicationUI::saveValues()
 {
     QFile file("data/stat.txt");
     file.open( QIODevice::WriteOnly );
-    QFile file1("data/old.bin");
+    QFile file1("shared/books/old.txt");
     file1.open( QIODevice::WriteOnly );
+
     QDataStream stream1( &file1);
     QDataStream stream( &file );
+
+    file.flush();
+    file1.flush();
+
     stream1 << map;
 
     stream << this->finalGPA << this->numCredits;
+
+
 }
 
 void ApplicationUI::loadValues(){
 
     if( this->opened == false){
 
+        QMap<int, pane> temp;
+
+
         QFile file1("data/stat.txt");
         file1.open( QIODevice::ReadOnly | QIODevice::Text );
-        QFile file("data/old.bin");
-        file.open( QIODevice::ReadOnly | QIODevice::Text );
+        QFile file("shared/books/old.txt");
+        file.open( QIODevice::ReadWrite );
+
         QDataStream stream( &file);
         QDataStream stream1( &file1);
 
-        stream >> map;
+        stream >> temp;
 
         stream1 >> this->finalGPA >> this->numCredits;
 
@@ -140,15 +151,21 @@ void ApplicationUI::loadValues(){
         QString up = QString::number( this->numCredits, 10);
         cRedits.data()->setText( up );
 
-        QMap<int,pane>::iterator it = map.begin();
+        QMap<int,pane>::iterator it = temp.begin();
 
-        while ( it != map.end() ){
+        int num = 1;
 
+        qDebug() << temp.count();
+
+        while ( it != temp.end() ){
+
+            map[num] = it.value();
             propertyMap->setProperty("cou", it.value().course_name);
             propertyMap->setProperty("cre", it.value().credit_value);
             propertyMap->setProperty("gra", it.value().letter_grade);
-            propertyMap->setProperty("key", it.key() );
+            propertyMap->setProperty("key", num );
             emit mySignal();
+            num++;
             it++;
         }
 
@@ -170,6 +187,9 @@ void ApplicationUI::updateCred()
     element.credit_value = sp;
     element.letter_grade = add.data()->property("gRADE").toString();
     element.course_name = add.data()->property("cour_name").toString();
+
+    qDebug() << "The course name is " << element.course_name;
+
     map.insert( add.data()->property("kEY").toInt(ok), element);
 }
 
