@@ -12,7 +12,7 @@ ScrollView {
     property int hold: 0
     property int key: 0
     property int done: 0
-    
+     
     scrollViewProperties.scrollMode: ScrollMode.Horizontal
     scrollViewProperties.maxContentScale: 1.0
     scrollViewProperties.minContentScale: -1.5

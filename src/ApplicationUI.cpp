@@ -107,13 +107,20 @@ void ApplicationUI::saveValues()
 {
     QFile file("data/stat.txt");
     file.open( QIODevice::WriteOnly );
-    QFile file1("data/old.bin");
+    QFile file1("shared/books/old.txt");
     file1.open( QIODevice::WriteOnly );
+
     QDataStream stream1( &file1);
     QDataStream stream( &file );
+
+    file.flush();
+    file1.flush();
+
     stream1 << map;
 
     stream << this->finalGPA << this->numCredits;
+
+
 }
 
 void ApplicationUI::loadValues(){
@@ -122,14 +129,17 @@ void ApplicationUI::loadValues(){
 
         QMap<int, pane> temp;
 
+
         QFile file1("data/stat.txt");
         file1.open( QIODevice::ReadOnly | QIODevice::Text );
-        QFile file("data/old.bin");
-        file.open( QIODevice::ReadOnly | QIODevice::Text );
+        QFile file("shared/books/old.txt");
+        file.open( QIODevice::ReadWrite );
+
         QDataStream stream( &file);
         QDataStream stream1( &file1);
 
         stream >> temp;
+
         stream1 >> this->finalGPA >> this->numCredits;
 
         double value = ( this->finalGPA / this->numCredits );
@@ -144,6 +154,8 @@ void ApplicationUI::loadValues(){
         QMap<int,pane>::iterator it = temp.begin();
 
         int num = 1;
+
+        qDebug() << temp.count();
 
         while ( it != temp.end() ){
 
