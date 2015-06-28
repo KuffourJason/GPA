@@ -120,7 +120,7 @@ void ApplicationUI::saveValues()
 
     stream << this->finalGPA << this->numCredits;
 
-
+    qDebug() << "Hello Saving";
 }
 
 void ApplicationUI::loadValues(){
@@ -155,7 +155,7 @@ void ApplicationUI::loadValues(){
 
         int num = 1;
 
-        qDebug() << temp.count();
+        //qDebug() << temp.count();
 
         while ( it != temp.end() ){
 
@@ -187,8 +187,6 @@ void ApplicationUI::updateCred()
     element.credit_value = sp;
     element.letter_grade = add.data()->property("gRADE").toString();
     element.course_name = add.data()->property("cour_name").toString();
-
-    qDebug() << "The course name is " << element.course_name;
 
     map.insert( add.data()->property("kEY").toInt(ok), element);
 }
